@@ -1,0 +1,22 @@
+apiVersion: camel.apache.org/v1alpha1
+kind: KameletBinding
+metadata:
+  name: chuck-to-rabbitmq
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1alpha1
+      name: chuck-norris-source # Substitua pelo nome do seu Kamelet source
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1alpha1
+      name: spring-rabbitmq-sink
+    properties:
+      exchangeName: "amq.direct" # Substitua pelo nome da sua fila
+      host: "production-rabbitmqcluster-nodes" #If your RabbitMQ service is in the same namespace as your Kamelet, you can use just the service name 
+      port: 5672  # Porta padrão do RabbitMQ
+      username: "guest" # Substitua pelo seu nome de usuário do RabbitMQ
+      password: "guest" # Substitua pela sua senha do RabbitMQ
+      routingKey: "test" # Opcional: substitua pela chave de rota, se necessário

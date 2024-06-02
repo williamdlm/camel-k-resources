@@ -1,0 +1,67 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: netty-to-log
+spec:
+  definition:
+    title: "Netty Server"
+    description: "Generate HTTP server to handle requests"
+    required:
+      - host
+      - port
+      - path
+    type: object
+    properties:
+      method:
+        title: HTTP Method
+        description: The HTTP method to handle
+        type: string
+        example: "GET"
+      host:
+        title: Host
+        description: The host for the HTTP service
+        type: string
+        example: "0.0.0.0"
+      port:
+        title: Port
+        description: The port for the HTTP service
+        type: integer
+        example: 8080
+      path:
+        title: Path
+        description: The context path for the HTTP service
+        type: string
+        example: "/hello"
+        default: "/"
+      message:
+        title: Message
+        description: The message to generate
+        type: string
+        default: "Initial message"
+  dependencies:
+    - "mvn:org.apache.camel.quarkus:camel-quarkus-microprofile-fault-tolerance"
+    - "camel:kamelet"
+    - "camel:netty-http"
+  template:
+    from:
+      uri: "netty-http:{{host}}:{{port}}{{path}}"
+      parameters:
+        httpMethodRestrict: "{{method}}"
+      steps:
+        - setHeader:
+            name: "Content-Type"
+            constant: "application/json"
+        - throttle:
+            expression:
+              constant: 3
+            timePeriodMillis: 10000
+        - circuitBreaker:
+            steps:
+              - to:
+                  uri: "http:naoexistentetlalala.com"
+              onFallback:
+                steps:
+                  - setBody:
+                      simple: "Serviço indisponível, por favor tente novamente mais tarde."
+                  - to:
+                      uri: "kamelet:log-sink"

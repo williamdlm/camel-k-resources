@@ -1,0 +1,18 @@
+apiVersion: camel.apache.org/v1alpha1
+kind: KameletBinding
+metadata:
+  name: send-to-log
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1alpha1
+      name: timer-source
+    properties:
+      period: 1000  # Definindo o período em milissegundos (1 segundo)
+      message: "olá mundo"  # Definindo a mensagem a ser enviada
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1alpha1
+      name: log-sink

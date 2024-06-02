@@ -1,0 +1,27 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: netty-to-rabbit-pipe
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: netty-http-source
+    properties:
+      host: "http://0.0.0.0"
+      method: "POST"
+      path: "/test"
+      port: 8294
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: spring-rabbitmq-sink
+    properties:
+      exchangeName: "amq.direct"
+      host: "production-rabbitmqcluster-nodes"
+      port: 5672
+      username: "guest"
+      password: "guest"
+      routingKey: "test"

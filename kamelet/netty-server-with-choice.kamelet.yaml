@@ -1,0 +1,73 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: netty-http-source
+  # labels:
+    # camel.apache.org/kamelet.type: "source"
+spec:
+  definition:
+    title: "Netty Server"
+    description: "Generate http server to handle requests"
+    required:
+      - host
+    properties:
+      method:
+        title: method
+        description: The http method to request
+        type: string
+        example: "GET"
+      host:
+        title: Host
+        description: Uri's Host
+        type: string
+        example: "http://0.0.0.0"
+      port:
+        type: integer
+        title: Port
+        description: The port for the HTTP service.
+        default: 8080
+      path:
+        type: string
+        title: Path
+        example: "/hello"
+        default: "/"
+        description: The context path for the HTTP service.
+      message:
+        title: Message
+        description: The message to generate
+        type: string
+        default: "Initial message"
+  dependencies:
+    - "camel:kamelet"
+    - "camel:netty-http"
+  template:
+    from:
+      uri: "netty-http:{{host}}:{{port}}{{path}}"
+      parameters:
+        httpMethodRestrict: "{{method}}" # QUERY PARAMETERS
+      steps:
+        - setHeader:
+            name: "Content-Type"
+            constant: "text/plain" # "application/json"
+        - throttle:
+            expression:
+              constant: 3
+            timePeriodMillis: 10000
+        - choice:
+            when:
+            - simple: "${header.CamelHttpMethod} == 'GET'"
+              steps:
+              - setBody:
+                  simple: "contem test"
+            otherwise:
+              steps:
+              - choice:
+                  when:
+                  - simple: "${body} contains 'foo'"
+                    steps:
+                    - setBody:
+                        simple: "Contains foo: ${body}"
+                  otherwise:
+                    steps:
+                    - setBody:
+                        simple: "No Contains foo: ${body}"

@@ -1,0 +1,21 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: netty-to-log
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: netty-to-log
+    properties:
+      method: "POST,GET" # "GET" ; "POST" or "GET,POST"
+      message: "Message netty-to-log"
+      host: "http://0.0.0.0"
+      path: "/test"
+      port: 8080
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: log-sink

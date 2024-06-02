@@ -1,0 +1,59 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: netty-server-source
+  labels:
+    camel.apache.org/kamelet.type: "source"
+spec:
+  definition:
+    title: "Netty Server"
+    description: "Generate http server to handle requests"
+    required:
+      - method
+    properties:
+      method:
+        title: method
+        description: The http method to request
+        type: string
+        default: "GET"
+      # message:
+      #   title: Message
+      #   description: The message to generate
+      #   type: string
+      #   default: "Initial message"
+      host:
+        title: Host
+        description: Uri's Host
+        type: string
+        default: "http://0.0.0.0"
+      port:
+        type: integer
+        title: Port
+        description: The port for the HTTP service.
+        default: 8080
+      path:
+        type: string
+        title: Path
+        example: "/hello"
+        default: "/"
+        description: The context path for the HTTP service.
+  # types:
+  # in:
+  # mediaType: text/plain
+  # out:
+  # mediaType: text/plain
+  dependencies:
+    - "camel:kamelet"
+    - "camel:netty-http"
+  template:
+    from:
+      uri: "netty-http:{{host}}:{{port}}{{path}}?httpMethodRestrict={{method}}" #following the example in documentation
+      # parameters:
+      # period: "{{period}}"
+      steps:
+        - setBody:
+            simple: "MessageBody: ${body}"
+        - setHeader:
+            name: "Content-Type"
+            constant: "text/plain" # "application/json"
+        - to: "kamelet:sink"
