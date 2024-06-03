@@ -1,0 +1,53 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: personal-timer-source
+spec:
+  definition:
+    description: Produces periodic messages with a custom payload.
+    properties:
+      contentType:
+        default: text/plain
+        description: The content type of the generated message.
+        title: Content Type
+        type: string
+      message:
+        description: The message to generate.
+        example: hello world
+        title: Message
+        type: string
+      period:
+        default: 1000
+        description: >-
+          The interval (in milliseconds) to wait between producing the next
+          message.
+        title: Period
+        type: integer
+      repeatCount:
+        description: Specifies a maximum limit of number of fires
+        title: Repeat Count
+        type: integer
+    required:
+      - message
+    title: Timer Source
+    type: object
+  dependencies:
+    - camel:core
+    - camel:timer
+    - camel:kamelet
+    - github:williamdlm/testing_jitpack/main-41a1902f1b-1
+  template:
+    from:
+      parameters:
+        period: '{{period}}'
+        repeatCount: '{{?repeatCount}}'
+      steps:
+        - setBody:
+            constant: '{{message}}'
+        - setHeader:
+            constant: '{{contentType}}'
+            name: Content-Type
+        - process:
+            ref: "#class:com.github.williamdlm.OnlyByeProcessor"
+        - to: kamelet:sink
+      uri: timer:tick

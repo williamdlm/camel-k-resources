@@ -1,0 +1,18 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: personaltimer-to-log
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: personal-timer-source
+    properties:
+      period: 1000  # Definindo o período em milissegundos (1 segundo)
+      message: "Will Smith"  # Definindo a mensagem a ser enviada
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: log-sink
