@@ -47,6 +47,9 @@ spec:
         - setHeader:
             constant: '{{contentType}}'
             name: Content-Type
+        - bean: 
+            ref: "#com.github.williamdlm.Greets"
+            method: "sayHi"
         - process:
             ref: "#class:com.github.williamdlm.OnlyByeProcessor"
         - to: kamelet:sink
