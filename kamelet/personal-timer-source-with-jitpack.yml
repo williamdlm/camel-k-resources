@@ -35,7 +35,7 @@ spec:
     - camel:core
     - camel:timer
     - camel:kamelet
-    - github:williamdlm/testing_jitpack/main-41a1902f1b-1
+    - github:williamdlm/testing_jitpack/8966acca72
   template:
     from:
       parameters:
