@@ -9,7 +9,7 @@ spec:
       apiVersion: camel.apache.org/v1
       name: cxf-source
     properties:
-      url: "http://0.0.0.0:8080/soap"  
+      url: "/soap"  # nodeIp:port/services/soap
   sink:
     ref:
       kind: Kamelet
