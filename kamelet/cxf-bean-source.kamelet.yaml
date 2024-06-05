@@ -1,7 +1,7 @@
 apiVersion: camel.apache.org/v1
 kind: Kamelet
 metadata:
-  name: cxf-source
+  name: cxf-bean-source
 spec:
   definition:
     title: "CXF SOAP"
@@ -17,9 +17,14 @@ spec:
   - "camel:kamelet"
   - "camel:cxf-soap"
   - "mvn:org.ow2.asm:asm:9.2"  # Adding ASM dependency
-  - "github:williamdlm/testing_jitpack/42baadcf9a"
+  - "github:williamdlm/testing_jitpack/0cb527bc9f"
   template:
+    beans:
+      - name: introduceEndpoint
+        method: introduceEndpoint
+        type: >-
+          #class:com.github.williamdlm.config.CxfConfig
     from:
-      uri: "cxf:{{url}}?serviceClass=com.github.williamdlm.service.IntroduceImpl"
+      uri: "cxf:bean:introduceEndpoint"
       steps:
       - to: kamelet:sink

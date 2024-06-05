@@ -1,0 +1,17 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: cxfbean-to-log
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: cxf-source
+    properties:
+      url: "/soapbean"  # nodeIp:port/services/soap
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: log-sink
