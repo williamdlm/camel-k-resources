@@ -1,0 +1,39 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: cxf-bean-sink
+spec:
+  definition:
+    title: "CXF SOAP"
+    description: "Handle SOAP Requests"
+    properties:
+      url:
+        title: "URL"
+        description: "Url service"
+        type: "string"
+        example: "/soap"
+        required: true
+  dependencies:
+    - "camel:core"
+    - "camel:kamelet"
+    - "camel:cxf-soap"
+    - "mvn:org.ow2.asm:asm:9.2"  # Adding ASM dependency
+    - "github:williamdlm/testing_jitpack/ab15810389"
+  template:
+    beans:
+      - name: producerCxf
+        type: '#class:com.github.williamdlm.config.CxfConfig'
+        method: producerCxf
+    from:
+      uri: kamelet:source
+      steps:
+        - setBody:
+            constant: |
+              <Envelope xmlns="http://schemas.xmlsoap.org/soap/envelope/">
+                <Body>
+                  <sayName xmlns="http://service.williamdlm.github.com/">
+                    <arg0>Novo teste para o sink</arg0>
+                  </sayName>
+                </Body>
+              </Envelope>
+        - to: "cxf:bean:producerCxf"
