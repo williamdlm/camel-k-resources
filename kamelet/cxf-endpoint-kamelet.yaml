@@ -1,0 +1,40 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: cxf-endpoint-kamelet
+spec:
+  definition:
+    title: "CXF Endpoint Kamelet"
+    description: "A Kamelet that creates a CXF endpoint."
+    required:
+      - address
+    properties:
+      address:
+        type: string
+        title: "Address"
+        description: "The address for the CXF endpoint."
+        example: "http://localhost:8080/service"
+      wsdlURL:
+        type: string
+        title: "WSDL URL"
+        description: "The WSDL URL for the CXF endpoint."
+        example: "classpath:wsdl/your-service.wsdl"
+  dependencies:
+    # - "mvn:org.apache.camel:camel-cxf:3.11.0"
+    - "camel:cxf-soap"
+    - "github:williamdlm/testing_jitpack/4ef5976bda"
+  template:
+    beans:
+      - name: cxfEndpoint
+        # type: org.apache.camel.component.cxf.CxfEndpoint
+        type: "#class:org.apache.camel.component.cxf.jaxws.CxfEndpoint"
+        # type: "#class:com.github.williamdlm.config.CxfConfig"
+        properties:
+          address: "{{address}}"
+          #   # wsdlURL: "{{wsdlURL}}"
+          serviceClass: "com.github.williamdlm.service.Introduce"
+          dataFormat: "RAW"
+    from:
+      uri: "cxf:bean:cxfEndpoint"
+      steps:
+        - to: kamelet:sink

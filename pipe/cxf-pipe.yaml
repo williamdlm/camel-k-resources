@@ -1,0 +1,17 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: cxf-pipe
+spec:
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: cxf-endpoint-kamelet
+    properties:
+      address: "http://localhost:8080/soap"
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: log-sink
