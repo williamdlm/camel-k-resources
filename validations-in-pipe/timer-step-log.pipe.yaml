@@ -1,0 +1,26 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: timer-step-log
+spec:
+  integration:
+    dependencies:
+      - mvn:pt.spms.hip.nexus:nexus.spms:1.0.8-20240709.150131-1
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: timer-source
+    properties:
+      period: 5000
+      message: "Camel K"
+  steps:
+    - ref:
+        kind: Kamelet
+        apiVersion: camel.apache.org/v1
+        name: set-some-action
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: log-sink

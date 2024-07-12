@@ -1,0 +1,28 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: set-some-action
+  labels:
+    camel.apache.org/kamelet.type: "action"
+spec:
+  definition:
+    title: "Set some Action"
+    description: Define a set-some-action
+    properties:
+      rule:
+        title: Some Rule
+        description: Some Description
+        type: string
+        example: something
+  dependencies:
+    - "camel:core"
+    - "camel:kamelet"
+    # - "mvn:pt.spms.hip.nexus:nexus.spms:1.0.8-20240709.150131-1"
+  template:
+    from:
+      uri: "kamelet:source"
+      steps:
+        - bean:
+            ref: "#pt.spms.hip.nexus.Greets"
+            method: "sayHi"
+        - to: "kamelet:sink"
