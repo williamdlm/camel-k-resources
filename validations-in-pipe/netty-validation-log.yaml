@@ -1,0 +1,26 @@
+apiVersion: camel.apache.org/v1
+kind: Pipe
+metadata:
+  name: netty-validation-log
+spec:
+  integration:
+    dependencies:
+      - mvn:pt.spms.hip.nexus:nexus.spms:1.0.8-20240712.150709-2
+  source:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: netty-http
+    properties:
+      method: GET,POST
+      port: 8299
+  steps:
+    - ref:
+        kind: Kamelet
+        apiVersion: camel.apache.org/v1
+        name: set-validation-action
+  sink:
+    ref:
+      kind: Kamelet
+      apiVersion: camel.apache.org/v1
+      name: log-sink

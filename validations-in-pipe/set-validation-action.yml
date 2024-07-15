@@ -1,0 +1,34 @@
+apiVersion: camel.apache.org/v1
+kind: Kamelet
+metadata:
+  name: set-validation-action
+  labels:
+    camel.apache.org/kamelet.type: "action"
+spec:
+  definition:
+    title: "Set some Action"
+    description: Define a set-some-action
+  dependencies:
+    - "camel:core"
+    - "camel:kamelet"
+  template:
+    from:
+      uri: "kamelet:source"
+      steps:
+        - set-property:
+            name: originalBody
+            simple: "${body}"
+        - bean:
+            ref: "#pt.spms.hip.nexus.Validation"
+            method: "validate"
+        - choice:
+            when:
+              - simple: "${body} == true"
+                steps:
+                  - set-body:
+                      simple: "${exchangeProperty.originalBody} é valido"
+            otherwise:
+              steps:
+                - set-body:
+                    simple: "${exchangeProperty.originalBody} não é valido"
+        - to: "kamelet:sink"
